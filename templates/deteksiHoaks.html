@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PukulEnam - Deteksi Hoax</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/deteksiHoaks.css')}}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="https://pukulenam.id/">
+                <img src="{{url_for('static', filename='images/pukulenam.png')}}" alt="PukulEnam Logo">
+            </a>
+            <a href="https://pukulenam.id/"> PukulEnam </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{{url_for('hoaks')}}">Deteksi Hoaks</a></li>
+                <li><a href="{{url_for('bias')}}">Deteksi Bias</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="deteksi-hoaks">
+            <img src="{{url_for('static', filename='images/search.png')}}">
+            <h1>Deteksi Hoaks</h1>
+            <p>Validasi berita sebelum anda membacanya</p>
+            <form action="/hoaks/predict" method="post">
+                <input type="text" placeholder="Masukan Judul" name="judul" value="{{judul}}">
+                <textarea placeholder="Masukan Konten" name="konten" required>{{konten}}</textarea>
+                <button type="submit">Cek Sekarang</button>
+            </form>
+        </div>
+    </main>
+
+    
+    <div id="chart">
+        <div id="chart-container">
+            <canvas id="myChart"></canvas>
+        </div>
+        <div class="result-text">
+            <span id="hoaksValue"></span>% pencarian mengatakan itu <strong>Hoaks</strong>
+        </div>
+        <script>
+            var hoaks = parseFloat("{{ prediction }}");
+            var temp = hoaks;
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Fakta', 'Hoaks'],
+                    datasets: [{
+                        data: [1-hoaks, hoaks],
+                        backgroundColor: ['#00bfae', '#ff4d4d'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        </script>
+        <script>
+            document.getElementById("hoaksValue").textContent = temp;
+        </script>
+    </div>
+</body>
+</html>
